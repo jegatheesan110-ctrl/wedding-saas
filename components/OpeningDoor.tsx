@@ -203,13 +203,20 @@ export default function OpeningDoor({
         </motion.g>
       </svg>
 
+      <style>{`
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 1; }
+          100% { transform: scale(2); opacity: 0; }
+        }
+      `}</style>
+
       {/* Glowing circle button */}
       <div 
         onClick={handleTap}
-        onTouchStart={(e) => { 
+        onTouchStart={(e) => e.preventDefault()}
+        onTouchEnd={(e) => {
           e.preventDefault()
-          e.stopPropagation()
-          handleTap() 
+          handleTap()
         }}
         style={{
           position: 'fixed',
@@ -222,60 +229,54 @@ export default function OpeningDoor({
           cursor: 'pointer'
         }}
       >
-        {/* Outer glow ring */}
-        <motion.div
-          animate={{
-            boxShadow: [
-              `0 0 20px 5px ${accentColor}40`,
-              `0 0 40px 15px ${accentColor}60`,
-              `0 0 20px 5px ${accentColor}40`
-            ]
-          }}
-          transition={{ duration: 2.5, repeat: Infinity }}
-          style={{
-            position: 'absolute',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-          }}
-        />
+        {/* 3 Animated Glow Rings */}
+        {!isOpening && [0, 0.3, 0.6].map((delay, i) => (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: '100px',
+              height: '100px',
+              borderRadius: '50%',
+              border: `2px solid ${accentColor}`,
+              backgroundColor: `${accentColor}11`,
+              boxShadow: `0 0 15px ${accentColor}`,
+              animation: `pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) ${delay}s infinite`,
+            }}
+          />
+        ))}
 
         {/* Circle button */}
         <motion.div
-          animate={{
-            boxShadow: [
-              `0 0 10px 2px ${accentColor}`,
-              `0 0 25px 8px ${accentColor}`,
-              `0 0 10px 2px ${accentColor}`
-            ]
-          }}
-          transition={{ duration: 2.5, repeat: Infinity }}
+          animate={isOpening ? { scale: 0, opacity: 0 } : { scale: 1, opacity: 1 }}
           style={{
-            width: '75px',
-            height: '75px',
+            width: '85px',
+            height: '85px',
             borderRadius: '50%',
             backgroundColor: '#000000',
-            border: `1.5px solid ${accentColor}`,
+            border: `2px solid ${accentColor}`,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '1px',
             position: 'relative',
-            zIndex: 2
+            zIndex: 2,
+            boxShadow: `0 0 20px ${accentColor}88`
           }}
         >
           <span style={{
             color: accentColor,
-            fontSize: '20px',
+            fontSize: '24px',
             fontFamily: 'Georgia, serif',
             fontWeight: 'bold',
             lineHeight: 1
           }}>V</span>
           <span style={{
             color: accentColor,
-            fontSize: '6px',
+            fontSize: '8px',
             letterSpacing: '1.5px',
+            fontWeight: 'bold',
             textAlign: 'center'
           }}>TAP TO OPEN</span>
         </motion.div>

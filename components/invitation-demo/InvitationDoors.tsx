@@ -31,8 +31,17 @@ export default function InvitationDoors({
 
   return (
     <div 
-      onClick={() => handleTap()}
-      onTouchStart={(e) => handleTap(e)}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        handleTap()
+      }}
+      onTouchStart={(e) => e.preventDefault()}
+      onTouchEnd={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        handleTap()
+      }}
       style={{
         position: 'fixed',
         top: 0,
@@ -104,56 +113,11 @@ export default function InvitationDoors({
         }} />
       </motion.div>
 
-      {/* CENTER TAP BUTTON */}
-      {!isOpen && (
-        <div
-          onClick={handleTap}
-          onTouchStart={handleTap}
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '90px',
-            height: '90px',
-            borderRadius: '50%',
-            border: `2px solid ${lineColor}`,
-            background: 'rgba(0,0,0,0.85)',
-            backdropFilter: 'blur(8px)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            zIndex: 10,
-            animation: 'pulse-glow 2s ease-in-out infinite',
-            boxShadow: isCracking 
-              ? `0 0 50px ${lineColor}`
-              : `0 0 20px ${lineColor}44`
-          }}
-        >
-          <span style={{
-            fontSize: '28px',
-            fontWeight: 'bold',
-            color: lineColor,
-            fontFamily: 'serif',
-            lineHeight: 1,
-            transform: isCracking ? 'scale(1.15)' : 'scale(1)',
-            transition: 'transform 0.2s'
-          }}>V</span>
-          <span style={{
-            fontSize: '8px',
-            color: lineColor,
-            letterSpacing: '1.5px',
-            marginTop: '5px',
-            fontWeight: 'bold',
-            textAlign: 'center'
-          }}>TAP TO OPEN</span>
-        </div>
-      )}
-
-      {/* PULSE ANIMATION */}
       <style>{`
+        @keyframes pulse-ring {
+          0% { transform: scale(0.8); opacity: 1; }
+          100% { transform: scale(2); opacity: 0; }
+        }
         @keyframes pulse-glow {
           0%, 100% { 
             box-shadow: 0 0 15px ${lineColor}44, 0 0 30px ${lineColor}22; 
@@ -165,6 +129,85 @@ export default function InvitationDoors({
           }
         }
       `}</style>
+
+      {/* CENTER TAP BUTTON */}
+      {!isOpen && (
+        <div
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleTap()
+          }}
+          onTouchStart={(e) => e.preventDefault()}
+          onTouchEnd={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleTap()
+          }}
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '90px',
+            height: '90px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 10,
+          }}
+        >
+          {/* 3 Animated Glow Rings */}
+          {[0, 0.3, 0.6].map((delay, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                border: `2px solid ${lineColor}`,
+                backgroundColor: `${lineColor}11`,
+                boxShadow: `0 0 15px ${lineColor}`,
+                animation: `pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) ${delay}s infinite`,
+              }}
+            />
+          ))}
+
+          <div style={{
+            width: '85px',
+            height: '85px',
+            borderRadius: '50%',
+            border: `2px solid ${lineColor}`,
+            background: 'rgba(0,0,0,0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            zIndex: 2,
+            boxShadow: `0 0 20px ${lineColor}88`
+          }}>
+            <span style={{
+              fontSize: '28px',
+              fontWeight: 'bold',
+              color: lineColor,
+              fontFamily: 'serif',
+              lineHeight: 1,
+            }}>V</span>
+            <span style={{
+              fontSize: '8px',
+              color: lineColor,
+              letterSpacing: '1.5px',
+              marginTop: '5px',
+              fontWeight: 'bold',
+              textAlign: 'center'
+            }}>TAP TO OPEN</span>
+          </div>
+        </div>
+      )}
 
     </div>
   )
