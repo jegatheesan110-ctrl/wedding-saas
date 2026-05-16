@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String        @id @default(cuid())
+  name           String?
+  email          String        @unique
+  password       String?
+  image          String?
+  isPaid         Boolean       @default(false)
+  invitations    Invitation[]
+  payments       Payment[]
+  accounts       Account[]
+  sessions       Session[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Invitation {
+  id               String         @id @default(cuid())
+  slug             String         @unique
+  userId           String?
+  user             User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  templateId       String
+  brideName        String
+  groomName        String
+  weddingDate      DateTime
+  weddingTime      String?
+  venueName        String?
+  venueAddress     String?
+  mapLink          String?
+  bridePhoto       String?
+  groomPhoto       String?
+  couplePhoto      String?
+  photo1           String?
+  photo2           String?
+  photo3           String?
+  photo4           String?
+  slideshowPhotos  String?
+  photoCaptions    Json?
+  musicTrack       String?
+  showPreWedding   Boolean        @default(false)
+  preWeddingEvents Json?
+  showDressCode    Boolean        @default(false)
+  dressCode        String?
+  showTransport    Boolean        @default(false)
+  transportInfo    String?
+  familyNames      String?
+  contactNumber    String?
+  email            String?
+  isPublished      Boolean        @default(false)
+  messages         GuestMessage[]
+  shopId           String?
+  shop             Shop?          @relation(fields: [shopId], references: [id])
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model Shop {
+  id                String       @id @default(cuid())
+  email             String       @unique
+  password          String
+  shopName          String
+  ownerName         String?
+  city              String?
+  phone             String?
+  plan              String       @default("none")
+  invitationsUsed   Int          @default(0)
+  invitationsLimit  Int          @default(0)
+  planStartDate     DateTime?
+  planEndDate       DateTime?
+  isActive          Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  invitations       Invitation[]
+  payments          ShopPayment[]
+}
+
+model GuestMessage {
+  id           String      @id @default(cuid())
+  invitationId String
+  invitation   Invitation  @relation(fields: [invitationId], references: [id], onDelete: Cascade)
+  guestName    String
+  attendance   String
+  guestCount   Int
+  message      String?
+  createdAt    DateTime    @default(now())
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount            Int
+  currency          String   @default("INR")
+  razorpayOrderId   String
+  razorpayPaymentId String?
+  status            String   @default("pending")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ShopPayment {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id])
+  amount    Int
+  plan      String
+  razorpayId String
+  status    String   @default("success")
+  createdAt DateTime @default(now())
+}

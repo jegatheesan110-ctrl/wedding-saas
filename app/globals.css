@@ -1,26 +1,167 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html {
+  scroll-behavior: smooth;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Landing page body override */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-catamaran), "Noto Sans Tamil", "Latha", sans-serif;
+  background: #FAF7F2;
+  color: #1a1a2e;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+.font-tamil,
+[lang="ta"] {
+  font-family: var(--font-catamaran), "Noto Sans Tamil", "Latha", sans-serif;
+}
+
+/* Gold underline decoration */
+.gold-underline {
+  position: relative;
+  display: inline-block;
+}
+.gold-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #B8860B, #D4AF37, #9A7B3C);
+  border-radius: 2px;
+}
+
+/* Invitation shell */
+.invitation-shell {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 245, 0.98));
+}
+
+/* Door animation helpers */
+.perspective-container {
+  perspective: 1200px;
+}
+
+.door-panel {
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.door-left-open {
+  transform: perspective(1200px) rotateY(-88deg);
+}
+
+.door-right-open {
+  transform: perspective(1200px) rotateY(88deg);
+}
+
+/* Scratch card canvas */
+.scratch-canvas {
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Countdown flip card */
+.flip-card-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.3s;
+}
+
+/* Feature card hover */
+.feature-card {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.feature-card:hover {
+  border-color: #B8860B;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Table alternating rows */
+.comparison-table tr:nth-child(even) {
+  background: #FAF7F2;
+}
+
+/* Scrollbar hide for gallery */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Testimonial card */
+.testimonial-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(184, 134, 11, 0.12);
+}
+
+/* Gold button */
+.btn-gold {
+  background: linear-gradient(135deg, #9A7B3C 0%, #B8860B 50%, #9A7B3C 100%);
+  color: white;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-gold:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
+}
+
+/* Outline button */
+.btn-outline-gold {
+  border: 2px solid #B8860B;
+  color: #B8860B;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-outline-gold:hover {
+  background: #B8860B;
+  color: white;
+}
+
+/* Performance Optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+.flower, .particle, .sparkle, .petal {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  perspective: 1000px;
+}
+
+canvas {
+  will-change: contents;
+  image-rendering: optimizeSpeed;
+  transform: translateZ(0);
+}
+
+.door-left, .door-right {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
