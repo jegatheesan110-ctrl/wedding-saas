@@ -17,21 +17,18 @@ const PLANS = [
     id: "starter", 
     name: "Starter", 
     price: 999, 
-    limit: 30, 
     features: ["30 Invitations per month", "All Templates"] 
   },
   { 
     id: "standard", 
     name: "Standard", 
     price: 1999, 
-    limit: 75, 
     features: ["75 Invitations per month", "All Templates"] 
   },
   { 
     id: "premium", 
     name: "Premium", 
     price: 3999, 
-    limit: 999999, 
     features: ["Unlimited Invitations", "All Templates"] 
   }
 ];
@@ -157,10 +154,7 @@ export default function ShopPricingPage() {
                 <h3 className="text-2xl font-semibold text-gray-900">{plan.name}</h3>
                 <p className="mt-4 flex items-baseline text-4xl font-extrabold text-gray-900">
                   ₹{plan.price}
-                  <span className="ml-1 text-xl font-medium text-gray-500">/mo</span>
-                </p>
-                <p className="mt-2 text-sm text-gray-500">
-                  {plan.limit === 999999 ? "Unlimited" : plan.limit} invitations per month
+                  <span className="ml-1 text-xl font-medium text-gray-500">/month</span>
                 </p>
                 
                 <ul className="mt-6 space-y-4">
