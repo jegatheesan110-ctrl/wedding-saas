@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Plus, Eye, Trash2, Calendar, Users, LayoutTemplate, Clock, AlertTriangle } from "lucide-react";
 import LogoutButton from "./LogoutButton";
@@ -8,6 +9,7 @@ export default async function AdminDashboardPage() {
   const session = await getAuthSession();
 
   if (!session || session.user.role !== "shop") {
+    redirect("/admin");
   }
 
   const shop = await prisma.shop.findUnique({
@@ -20,9 +22,7 @@ export default async function AdminDashboardPage() {
   });
 
   if (!shop) {
-  }
-
-  if (shop.plan === "none") {
+    redirect("/admin");
   }
 
   const now = new Date();
@@ -38,6 +38,10 @@ export default async function AdminDashboardPage() {
     });
     isActuallyExpired = true;
     shop.isActive = false;
+  }
+
+  if (!shop.plan || shop.plan === "none" || isActuallyExpired) {
+    redirect("/admin/pricing");
   }
 
   const getDaysRemaining = (planEndDate: Date | null) => {

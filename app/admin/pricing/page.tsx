@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
+import Link from "next/link";
 import { Check, Loader2, AlertCircle } from "lucide-react";
 
 declare global {
@@ -17,21 +18,21 @@ const PLANS = [
     name: "Starter", 
     price: 999, 
     limit: 30, 
-    features: ["30 Invitations per month", "All Premium Templates", "Priority Support"] 
+    features: ["30 Invitations per month", "All Templates"] 
   },
   { 
     id: "standard", 
     name: "Standard", 
     price: 1999, 
     limit: 75, 
-    features: ["75 Invitations per month", "All Premium Templates", "Priority Support", "Custom Branding"] 
+    features: ["75 Invitations per month", "All Templates"] 
   },
   { 
     id: "premium", 
     name: "Premium", 
     price: 3999, 
     limit: 999999, 
-    features: ["Unlimited Invitations", "All Premium Templates", "24/7 Dedicated Support", "Custom Branding", "API Access"] 
+    features: ["Unlimited Invitations", "All Templates"] 
   }
 ];
 
@@ -142,6 +143,11 @@ export default function ShopPricingPage() {
           <p className="mt-4 text-xl text-gray-600">
             Choose the right plan to grow your wedding invitation business
           </p>
+          <div className="mt-6">
+            <Link href="/admin/dashboard" className="text-purple-600 hover:text-purple-700 font-medium flex items-center justify-center gap-1">
+              Already have an active plan? Go to Dashboard ✨
+            </Link>
+          </div>
         </div>
 
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-lg mx-auto lg:max-w-none">

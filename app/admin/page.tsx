@@ -28,7 +28,14 @@ export default function AdminLoginPage() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/admin/dashboard");
+        const sessionRes = await fetch('/api/auth/session');
+        const sessionData = await sessionRes.json();
+        
+        if (sessionData?.user?.role === "shop" && !sessionData.user.isPaid) {
+          router.push("/admin/pricing");
+        } else {
+          router.push("/admin/dashboard");
+        }
         router.refresh();
       }
     } catch (err) {
