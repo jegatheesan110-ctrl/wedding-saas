@@ -40,7 +40,7 @@ export default async function AdminDashboardPage() {
     shop.isActive = false;
   }
 
-  if (!shop.plan || shop.plan === "none" || isActuallyExpired) {
+  if (!shop.plan || shop.plan === "none") {
     redirect("/admin/pricing");
   }
 
@@ -66,9 +66,9 @@ export default async function AdminDashboardPage() {
     return invDate.getMonth() === now.getMonth() && invDate.getFullYear() === now.getFullYear();
   }).length;
 
-  const invitationsUsed = shop.invitationsUsed;
-  const invitationsLimit = shop.invitationsLimit;
-  const percentUsed = invitationsLimit > 0 ? (invitationsUsed / invitationsLimit) * 100 : 0;
+  const limitLabel = shop.plan === "premium" ? "Unlimited" : (shop.plan === "standard" ? "75" : "30");
+  const invitationsLimit = shop.plan === "premium" ? 999999 : (shop.plan === "standard" ? 75 : 30);
+  const percentUsed = invitationsLimit > 0 ? (invitationsThisMonth / invitationsLimit) * 100 : 0;
   
   const limitReached = !isActuallyExpired && shop.plan !== "premium" && percentUsed >= 100;
   const showWarning = !isActuallyExpired && shop.plan !== "premium" && percentUsed >= 80 && percentUsed < 100;
@@ -89,11 +89,21 @@ export default async function AdminDashboardPage() {
             <div className="flex items-center space-x-6 text-sm text-gray-600">
               <div className="flex flex-col items-end">
                 <span className="font-medium text-gray-900">
-                  Used: {shop.invitationsUsed}/{shop.invitationsLimit === 0 ? 'Unlimited' : shop.invitationsLimit}
+                  Used: {invitationsThisMonth}/{limitLabel}
                 </span>
-                <span className={`text-xs font-medium ${getDaysColor(daysRemaining)}`}>
-                  {daysRemaining > 0 ? `${daysRemaining} days remaining` : "Plan expired"}
-                </span>
+                {isActuallyExpired ? (
+                  <span className="text-xs font-medium text-red-600">
+                    Expired - Renew Now
+                  </span>
+                ) : limitReached ? (
+                  <span className="text-xs font-medium text-red-600">
+                    Limit Reached - Upgrade
+                  </span>
+                ) : (
+                  <span className={`text-xs font-medium ${getDaysColor(daysRemaining)}`}>
+                    {daysRemaining} days remaining
+                  </span>
+                )}
               </div>
               <LogoutButton className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500 transition-colors" />
             </div>
@@ -140,7 +150,7 @@ export default async function AdminDashboardPage() {
             <AlertTriangle className="h-6 w-6 text-yellow-500 mr-3 flex-shrink-0" />
             <div>
               <p className="text-yellow-800 font-bold text-lg">Running low on invitations</p>
-              <p className="text-yellow-700 text-sm">You have only {invitationsLimit - invitationsUsed} invitations remaining this month.</p>
+              <p className="text-yellow-700 text-sm">You have only {invitationsLimit - invitationsThisMonth} invitations remaining this month.</p>
             </div>
           </div>
         )}
@@ -230,10 +240,15 @@ export default async function AdminDashboardPage() {
             </h3>
             
             {isActuallyExpired || limitReached ? (
-              <button disabled className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-400 cursor-not-allowed">
-                <Plus className="-ml-1 mr-2 h-5 w-5" />
-                Create New Invitation
-              </button>
+              <div className="flex flex-col items-end gap-1 w-full sm:w-auto">
+                <button disabled className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-400 cursor-not-allowed">
+                  <Plus className="-ml-1 mr-2 h-5 w-5" />
+                  Create New Invitation
+                </button>
+                <span className="text-xs font-bold text-red-600">
+                  {isActuallyExpired ? "Plan Expired! Renew to continue" : "Plan limit reached! Upgrade your plan"}
+                </span>
+              </div>
             ) : (
               <Link
                 href="/templates"

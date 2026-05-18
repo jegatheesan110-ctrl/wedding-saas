@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { slugifyInvitation } from "@/lib/utils";
-import { canCreateInvitation } from "@/lib/checkInvitationLimit";
+import { canCreateInvitation, countInvitationsThisMonth } from "@/lib/checkInvitationLimit";
 
 export async function POST(request: Request) {
   try {
@@ -38,11 +38,16 @@ export async function POST(request: Request) {
     };
 
     if (session.user.role === "shop") {
-      const shop = await prisma.shop.findUnique({ where: { email: session.user.email } });
+      const shop = await prisma.shop.findUnique({
+        where: { email: session.user.email },
+        include: { invitations: true }
+      });
       if (!shop) return NextResponse.json({ error: "Shop not found" }, { status: 404 });
       
-      if (!canCreateInvitation(shop)) {
-        return NextResponse.json({ error: "Monthly limit reached. Please upgrade your plan." }, { status: 403 });
+      const invitationsThisMonth = countInvitationsThisMonth(shop.invitations);
+      const checkResult = canCreateInvitation(shop, invitationsThisMonth);
+      if (!checkResult.allowed) {
+        return NextResponse.json({ error: checkResult.reason }, { status: 403 });
       }
 
       const invitation = await prisma.invitation.create({

@@ -1,14 +1,53 @@
-export function canCreateInvitation(shop: {
+export type ShopForLimitCheck = {
   plan: string;
-  invitationsUsed: number;
   invitationsLimit: number;
-}) {
-  // Premium plan = unlimited
-  if (shop.plan === 'premium') return true;
-  
-  // Check if under limit
-  if (shop.invitationsUsed < shop.invitationsLimit) {
-    return true;
+  planEndDate: Date | null;
+  isActive: boolean;
+};
+
+/**
+ * Returns { allowed: true } or { allowed: false, reason: string }
+ * Uses the dynamic monthly count (passed in) for accurate per-month enforcement.
+ */
+export function canCreateInvitation(
+  shop: ShopForLimitCheck,
+  invitationsThisMonth: number
+): { allowed: boolean; reason?: string } {
+  const now = new Date();
+
+  // Check plan expiry
+  const isExpired = shop.planEndDate ? shop.planEndDate < now : true;
+  if (isExpired || !shop.isActive) {
+    return { allowed: false, reason: "Plan Expired! Renew to continue" };
   }
-  return false;
+
+  // Premium plan = unlimited
+  if (shop.plan === "premium") {
+    return { allowed: true };
+  }
+
+  // Check monthly limit
+  if (invitationsThisMonth >= shop.invitationsLimit) {
+    return {
+      allowed: false,
+      reason: "Plan limit reached! Upgrade your plan",
+    };
+  }
+
+  return { allowed: true };
+}
+
+/**
+ * Returns how many invitations were created this calendar month for a shop.
+ */
+export function countInvitationsThisMonth(
+  invitations: Array<{ createdAt: Date }>
+): number {
+  const now = new Date();
+  return invitations.filter((inv) => {
+    const d = new Date(inv.createdAt);
+    return (
+      d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    );
+  }).length;
 }
