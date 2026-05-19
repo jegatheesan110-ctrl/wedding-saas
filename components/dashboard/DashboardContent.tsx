@@ -369,10 +369,11 @@ export default function DashboardContent({
                           <Link
                             href={`/invitation/${inv.slug}`}
                             target="_blank"
-                            className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
+                            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
                             title="View Invitation"
                           >
-                            <Eye className="h-5 w-5" />
+                            <Eye className="h-4 w-4 mr-1.5" />
+                            VIEW
                           </Link>
                           <button
                             onClick={() => handleDelete(inv.id)}
