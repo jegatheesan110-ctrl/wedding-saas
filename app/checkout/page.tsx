@@ -444,6 +444,26 @@ function CheckoutContent() {
                 >
                   👁️ Card பார்க்க
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    router.push('/admin/dashboard');
+                  }}
+                  style={{
+                    backgroundColor: '#7c3aed',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '10px',
+                    padding: '12px',
+                    fontSize: '15px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    marginTop: '4px'
+                  }}
+                >
+                  ⬅️ Dashboard-க்கு செல்லவும் (Go to Dashboard)
+                </button>
               </div>
             </div>
           )}

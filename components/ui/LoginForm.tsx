@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/admin/dashboard");
   }
 
   return (
@@ -35,7 +35,7 @@ export function LoginForm() {
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
         <button disabled={loading} className="w-full rounded-full bg-brand.rose px-5 py-3 font-semibold text-white">{loading ? "சில நொடிகள்..." : "உள்நுழை"}</button>
       </form>
-      <button onClick={() => signIn("google", { callbackUrl: "/dashboard" })} className="mt-4 w-full rounded-full border border-white/20 px-5 py-3 font-semibold text-white">Google மூலம் தொடர்க</button>
+      <button onClick={() => signIn("google", { callbackUrl: "/admin/dashboard" })} className="mt-4 w-full rounded-full border border-white/20 px-5 py-3 font-semibold text-white">Google மூலம் தொடர்க</button>
       <Link href="mailto:support@example.com" className="mt-5 block text-center text-sm text-brand.blush">Forgot password link</Link>
     </div>
   );

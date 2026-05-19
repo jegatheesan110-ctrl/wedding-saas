@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugifyInvitation } from "@/lib/utils";
+import { getAuthSession } from "@/lib/auth";
+import { canCreateInvitation, countInvitationsThisMonth } from "@/lib/checkInvitationLimit";
 
 export async function POST(request: Request) {
   try {
+    const session = await getAuthSession();
     const body = await request.json();
     const {
       templateId,
@@ -27,6 +30,66 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // Generate Unique Slug
+    let slug = slugifyInvitation(brideName, groomName, weddingDate);
+    const existing = await prisma.invitation.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
+    }
+
+    // Check if logged-in user is a shop owner
+    if (session?.user?.role === "shop") {
+      const shop = await prisma.shop.findUnique({
+        where: { id: session.user.id },
+        include: { invitations: true },
+      });
+
+      if (!shop) {
+        return NextResponse.json({ error: "Shop not found" }, { status: 404 });
+      }
+
+      // Check limits
+      const invitationsThisMonth = countInvitationsThisMonth(shop.invitations);
+      const limitCheck = canCreateInvitation(shop, invitationsThisMonth);
+      if (!limitCheck.allowed) {
+        return NextResponse.json({ error: limitCheck.reason }, { status: 403 });
+      }
+
+      // Create Invitation for Shop
+      const invitation = await prisma.invitation.create({
+        data: {
+          shopId: shop.id,
+          slug,
+          templateId: templateId || "royal-elegance",
+          brideName: brideName || "Bride",
+          groomName: groomName || "Groom",
+          weddingDate: weddingDate ? new Date(weddingDate) : new Date(),
+          weddingTime: weddingTime || "TBD",
+          venueName: weddingVenue || null,
+          venueAddress: weddingVenue || null,
+          mapLink: mapLink || null,
+          couplePhoto: photoUrl || null,
+          photo1: photo1 || null,
+          photo2: photo2 || null,
+          photo3: photo3 || null,
+          photo4: photo4 || null,
+          familyNames: familyNames || null,
+          contactNumber: contactNumber || null,
+          email: email || null,
+          isPublished: true,
+        },
+      });
+
+      // Update shop invitationsUsed count
+      await prisma.shop.update({
+        where: { id: shop.id },
+        data: { invitationsUsed: { increment: 1 } },
+      });
+
+      return NextResponse.json({ success: true, slug: invitation.slug });
+    }
+
+    // Fallback: Regular User flow
     // 1. Find or Create User
     let user = await prisma.user.findUnique({
       where: { email },
@@ -46,15 +109,6 @@ export async function POST(request: Request) {
         where: { id: user.id },
         data: { isPaid: true },
       });
-    }
-
-    // 2. Generate Unique Slug
-    let slug = slugifyInvitation(brideName, groomName, weddingDate);
-    
-    // Check if slug exists, add random string if so
-    const existing = await prisma.invitation.findUnique({ where: { slug } });
-    if (existing) {
-      slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
     }
 
     // 3. Create Invitation

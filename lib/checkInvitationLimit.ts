@@ -26,8 +26,9 @@ export function canCreateInvitation(
     return { allowed: true };
   }
 
-  // Check monthly limit
-  if (invitationsThisMonth >= shop.invitationsLimit) {
+  // Check monthly limit based on plan
+  const planLimit = shop.plan === "standard" ? 75 : (shop.plan === "starter" ? 30 : 0);
+  if (invitationsThisMonth >= planLimit) {
     return {
       allowed: false,
       reason: "Plan limit reached! Upgrade your plan",

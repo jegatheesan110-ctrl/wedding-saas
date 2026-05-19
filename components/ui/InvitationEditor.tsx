@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -32,7 +32,7 @@ export function InvitationEditor({ initialData, mode }: { initialData?: Partial<
     const res = await fetch(mode === "create" ? "/api/invitation/create" : "/api/invitation/update", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     const data = await res.json(); setSaving(false);
     if (!res.ok) return setMessage(data.error || "சேமிக்க முடியவில்லை");
-    router.push("/dashboard");
+    router.push("/admin/dashboard");
   }
 
   return <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">{/* unchanged structure; only labels fixed */}
