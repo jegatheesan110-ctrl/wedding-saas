@@ -66,7 +66,8 @@ function CheckoutContent() {
 
       const data = await res.json();
       if (res.ok && data.slug) {
-        router.push("/admin/dashboard");
+        setGeneratedSlug(data.slug);
+        setCardGenerated(true);
       } else {
         alert(data.error || "அழைப்பிதழ் உருவாக்க முடியவில்லை");
       }
