@@ -14,6 +14,7 @@ export function FloatingActions({ theme, invitation, slug }: { theme?: Invitatio
     audioRef.current = new Audio('/music/nadaswaram.mp3');
     audioRef.current.loop = true;
     audioRef.current.volume = 0.5;
+    audioRef.current.play().then(() => setMusicOn(true)).catch(err => console.error("Audio playback failed:", err));
 
     return () => {
       // Cleanup on unmount

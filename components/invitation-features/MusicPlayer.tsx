@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { Music2, Pause } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -11,6 +11,7 @@ export function MusicPlayer({ src }: { src?: string | null }) {
     if (!src) return;
     audioRef.current = new Audio(src);
     audioRef.current.loop = true;
+    audioRef.current.play().then(() => setPlaying(true)).catch(console.error);
     return () => { audioRef.current?.pause(); audioRef.current = null; };
   }, [src]);
 

@@ -9,6 +9,7 @@ export default function MusicPlayer() {
     audioRef.current = new Audio('/music/nadaswaram.mp3')
     audioRef.current.loop = true
     audioRef.current.volume = 0.5
+    audioRef.current.play().then(() => setIsPlaying(true)).catch(console.error)
     return () => {
       audioRef.current?.pause()
       audioRef.current = null
