@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
-
-const razorpay = new Razorpay({
-  key_id: "rzp_test_Si8gMgFDsNCx4P",
-  key_secret: "32KBzcHoA04hr5C8k6z1d3uC",
-});
+import { razorpay } from "@/lib/razorpay";
 
 const PLAN_AMOUNTS: Record<string, number> = {
   starter: 99900,

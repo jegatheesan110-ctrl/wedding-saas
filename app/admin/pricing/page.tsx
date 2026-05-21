@@ -72,7 +72,7 @@ export default function ShopPricingPage() {
 
       // 2. Open Razorpay modal
       const options = {
-        key: "rzp_test_Si8gMgFDsNCx4P", // Test key
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Use env variable
         amount: data.amount,
         currency: "INR",
         name: "Wedding SaaS Admin",
@@ -102,10 +102,9 @@ export default function ShopPricingPage() {
             alert('Something went wrong during verification.');
           }
         },
-        prefill: {
-          name: "Shop Owner",
-          email: "shop@example.com",
-        },
+        prefill: {},
+        readonly: {},
+        hidden: { contact: true, email: true },
         theme: {
           color: "#9333ea",
         },

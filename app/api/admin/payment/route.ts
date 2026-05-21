@@ -1,11 +1,6 @@
 import { NextResponse } from "next/server";
-import Razorpay from "razorpay";
 import { getAuthSession } from "@/lib/auth";
-
-const razorpay = new Razorpay({
-  key_id: "rzp_test_Si8gMgFDsNCx4P",
-  key_secret: "32KBzcHoA04hr5C8k6z1d3uC",
-});
+import { razorpay } from "@/lib/razorpay";
 
 export async function POST(req: Request) {
   try {

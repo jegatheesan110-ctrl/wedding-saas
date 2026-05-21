@@ -8,7 +8,7 @@ import { FastPhotoUpload } from "@/components/ui/FastPhotoUpload";
 import { CheckCircle2, CreditCard, Heart, MapPin, Users, Phone, Mail, Calendar, Clock } from "lucide-react";
 import { AdminHeader } from "@/components/ui/AdminHeader";
 
-const RAZORPAY_KEY = "rzp_test_Si8gMgFDsNCx4P";
+
 
 function CheckoutContent() {
   const searchParams = useSearchParams();

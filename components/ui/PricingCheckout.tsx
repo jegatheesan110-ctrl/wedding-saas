@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -65,7 +65,9 @@ export function PricingCheckout() {
         }
       },
       theme: { color: "#B76E79" },
-      prefill: orderData.prefill,
+      prefill: {},
+      readonly: {},
+      hidden: { contact: true, email: true },
     });
 
     razorpay.open();
