@@ -37,6 +37,26 @@ export default function SuperAdminDashboard() {
     }
   }
 
+  const cancelTrial = async (shopId: string) => {
+    if (window.confirm('நிச்சயமாக cancel செய்யணுமா?')) {
+      const res = await fetch(
+        '/api/superadmin/cancel-trial',
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({ shopId })
+        }
+      )
+      const data = await res.json()
+      if (data.success) {
+        alert('Trial cancel செய்யப்பட்டது')
+        fetchData()
+      }
+    }
+  }
+
   return (
     <div style={{
       padding: 20,
@@ -101,21 +121,39 @@ export default function SuperAdminDashboard() {
               {s.isActive ? 'Active' : 'Inactive'} 
               - {s.plan}
             </p>
-            <button
-              onClick={() => giveFreeTrial(s.id)}
-              style={{
-                backgroundColor: '#d4af37',
-                color: '#000',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '6px 12px',
-                cursor: 'pointer',
-                fontSize: '12px',
-                marginTop: '8px'
-              }}
-            >
-              🎁 Free Trial கொடு
-            </button>
+            {!s.isActive ? (
+              <button
+                onClick={() => giveFreeTrial(s.id)}
+                style={{
+                  backgroundColor: '#d4af37',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '6px 12px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  marginTop: '8px'
+                }}
+              >
+                🎁 Free Trial கொடு
+              </button>
+            ) : (
+              <button
+                onClick={() => cancelTrial(s.id)}
+                style={{
+                  backgroundColor: '#ef4444',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '6px 12px',
+                  cursor: 'pointer',
+                  fontSize: '12px',
+                  marginTop: '8px'
+                }}
+              >
+                ❌ Cancel Trial
+              </button>
+            )}
           </div>
         ))
       )}
