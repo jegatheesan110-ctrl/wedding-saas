@@ -16,11 +16,17 @@ export function FastPhotoUpload({ photos, onChange }: FastPhotoUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (index: number, file: File) => {
+    // 1. File size check (Max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert(`Photo ${index + 1} exceeds the 5MB limit. Please choose a smaller file.`);
+      return;
+    }
+
     try {
       setUploading((prev) => [...prev, index]);
       setProgress((prev) => ({ ...prev, [index]: 10 }));
 
-      // 1. Compress
+      // 2. Compress
       const options = {
         maxSizeMB: 1,
         maxWidthOrHeight: 1200,
@@ -29,7 +35,7 @@ export function FastPhotoUpload({ photos, onChange }: FastPhotoUploadProps) {
       const compressedFile = await imageCompression(file, options);
       setProgress((prev) => ({ ...prev, [index]: 30 }));
 
-      // 2. Upload
+      // 3. Upload
       const formData = new FormData();
       formData.append("file", compressedFile);
 
@@ -38,16 +44,22 @@ export function FastPhotoUpload({ photos, onChange }: FastPhotoUploadProps) {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload failed");
-
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed");
+      }
+
       setProgress((prev) => ({ ...prev, [index]: 100 }));
       onChange(index, data.url);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Upload failed for Photo " + (index + 1));
+      alert(`Upload failed for Photo ${index + 1}: ${err.message || 'Unknown error'}`);
+      // Clear the photo so they can retry
+      onChange(index, null);
     } finally {
       setUploading((prev) => prev.filter((i) => i !== index));
+      setProgress((prev) => ({ ...prev, [index]: 0 }));
     }
   };
 

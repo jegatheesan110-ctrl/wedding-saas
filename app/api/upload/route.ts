@@ -41,10 +41,10 @@ export async function POST(request: NextRequest) {
       filename: file.name,
       url: uploadResponse.secure_url 
     })
-  } catch (error) {
-    console.error('Upload error:', error)
+  } catch (error: any) {
+    console.error('Upload error (full object):', error)
     return NextResponse.json(
-      { error: 'Upload failed' },
+      { error: error.message || error.name || 'Upload failed due to unknown error' },
       { status: 500 }
     )
   }

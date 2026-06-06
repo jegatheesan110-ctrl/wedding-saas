@@ -88,9 +88,16 @@ const templates = [
   },
 ];
 
+import { getAuthSession } from "@/lib/auth";
+
 export default async function TemplatesPage() {
+  const session = await getAuthSession();
+  const isShopOwner = session?.user?.role === "shop";
+
   const getHref = (templateId: string) => {
-    return `/checkout?template=${templateId}`;
+    return isShopOwner 
+      ? `/checkout?template=${templateId}`
+      : `/individual/checkout?template=${templateId}`;
   };
 
   return (
