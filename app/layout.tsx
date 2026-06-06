@@ -17,16 +17,28 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "வந்தனம் | டிஜிட்டல் திருமண அழைப்பிதழ்",
+    default: "வந்தனம் - 3D Tamil Wedding Invitations",
     template: "%s | வந்தனம்",
   },
-  description: "வந்தனம் - தமிழ் திருமண டிஜிட்டல் அழைப்பிதழ் உருவாக்கும் தளம்",
+  description: "Create beautiful 3D digital wedding invitations in Tamil. Share via WhatsApp instantly.",
+  keywords: ["tamil wedding invitation", "digital wedding card", "3D wedding invitation", "திருமண அழைப்பிதழ்"],
   openGraph: {
-    title: "வந்தனம் | டிஜிட்டல் திருமண அழைப்பிதழ்",
-    description: "வந்தனம் - தமிழ் திருமண டிஜிட்டல் அழைப்பிதழ் உருவாக்கும் தளம்",
+    title: "வந்தனம் - 3D Tamil Wedding Invitations",
+    description: "Create beautiful 3D digital wedding invitations in Tamil. Share via WhatsApp instantly.",
     type: "website",
     siteName: "வந்தனம்",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "வந்தனம் - 3D Tamil Wedding Invitations",
+      }
+    ]
   },
+  verification: {
+    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_TAG",
+  }
 };
 
 export const viewport = {
