@@ -95,9 +95,11 @@ export default async function TemplatesPage() {
   const isShopOwner = session?.user?.role === "shop";
 
   const getHref = (templateId: string) => {
-    return isShopOwner 
-      ? `/checkout?template=${templateId}`
-      : `/individual/checkout?template=${templateId}`;
+    // Shop owners → admin checkout form (no payment gate, uses plan limits)
+    if (isShopOwner) return `/checkout?template=${templateId}`;
+    // Individual users → payment-first 3-step flow
+    // Step 1: Pay ₹199 → Step 2: Fill details → Step 3: Get link
+    return `/individual/checkout?template=${templateId}`;
   };
 
   return (

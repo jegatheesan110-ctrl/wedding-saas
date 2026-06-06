@@ -44,49 +44,52 @@ export async function POST(request: Request) {
         include: { invitations: true },
       });
 
-      if (!shop) {
-        return NextResponse.json({ error: "Shop not found" }, { status: 404 });
+      // If shop record doesn't exist (e.g. stale JWT / deleted shop),
+      // fall through to the Individual user flow below instead of erroring.
+      if (shop) {
+        // Check limits
+        const invitationsThisMonth = countInvitationsThisMonth(shop.invitations);
+        const limitCheck = canCreateInvitation(shop, invitationsThisMonth);
+        if (!limitCheck.allowed) {
+          return NextResponse.json({ error: limitCheck.reason }, { status: 403 });
+        }
+
+        // Create Invitation for Shop
+        const invitation = await prisma.invitation.create({
+          data: {
+            shopId: shop.id,
+            slug,
+            templateId: templateId || "royal-elegance",
+            brideName: brideName || "Bride",
+            groomName: groomName || "Groom",
+            weddingDate: weddingDate ? new Date(weddingDate) : new Date(),
+            weddingTime: weddingTime || "TBD",
+            venueName: weddingVenue || null,
+            venueAddress: weddingVenue || null,
+            mapLink: mapLink || null,
+            couplePhoto: photoUrl || null,
+            photo1: photo1 || null,
+            photo2: photo2 || null,
+            photo3: photo3 || null,
+            photo4: photo4 || null,
+            familyNames: familyNames || null,
+            contactNumber: contactNumber || null,
+            email: email || null,
+            isPublished: true,
+          },
+        });
+
+        // Update shop invitationsUsed count
+        await prisma.shop.update({
+          where: { id: shop.id },
+          data: { invitationsUsed: { increment: 1 } },
+        });
+
+        return NextResponse.json({ success: true, slug: invitation.slug });
       }
 
-      // Check limits
-      const invitationsThisMonth = countInvitationsThisMonth(shop.invitations);
-      const limitCheck = canCreateInvitation(shop, invitationsThisMonth);
-      if (!limitCheck.allowed) {
-        return NextResponse.json({ error: limitCheck.reason }, { status: 403 });
-      }
-
-      // Create Invitation for Shop
-      const invitation = await prisma.invitation.create({
-        data: {
-          shopId: shop.id,
-          slug,
-          templateId: templateId || "royal-elegance",
-          brideName: brideName || "Bride",
-          groomName: groomName || "Groom",
-          weddingDate: weddingDate ? new Date(weddingDate) : new Date(),
-          weddingTime: weddingTime || "TBD",
-          venueName: weddingVenue || null,
-          venueAddress: weddingVenue || null,
-          mapLink: mapLink || null,
-          couplePhoto: photoUrl || null,
-          photo1: photo1 || null,
-          photo2: photo2 || null,
-          photo3: photo3 || null,
-          photo4: photo4 || null,
-          familyNames: familyNames || null,
-          contactNumber: contactNumber || null,
-          email: email || null,
-          isPublished: true,
-        },
-      });
-
-      // Update shop invitationsUsed count
-      await prisma.shop.update({
-        where: { id: shop.id },
-        data: { invitationsUsed: { increment: 1 } },
-      });
-
-      return NextResponse.json({ success: true, slug: invitation.slug });
+      // Shop record not found — fall through to Individual user flow
+      console.warn(`Session claimed shop role for id=${session.user.id} but no shop found. Falling through to individual flow.`);
     }
 
     // Fallback: Regular User flow
